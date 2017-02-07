@@ -1,2 +1,3 @@
 # UCSD-Algorithms
-Code for UCSD Algorithms Coursera Course
+Code for UCSD Algorithms Coursera Course (Algorithmic Toolbox)
+
