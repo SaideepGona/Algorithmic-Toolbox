@@ -1,94 +1,77 @@
 # Uses python3
 import sys
 
-def divide_check(dividend, divisor):
-
-    if dividend % divisor == 0:
-        return True
-    else:
-        return False
-
-def div_int(dividend, divisor):
-
-    return int(dividend/divisor)
-
-def smallest_check(list):
-
-    change_val = 3
-    mini = min(list)
-    min_index = list.index(min)
-
-    if min_index == 1:
-        change_val = 2
-    if min_index == 2:
-        change_val = 1
-
-    return (mini, change_val)
-
-def path_add(change_val, current_val):
-
-    path_val = 0
-
-    if change_val == 3 or 2:
-        path_val = int(current_val/change_val)
-    else:
-        path_val = int(current_val-1)
-
-    return path_val
-
-# Main
-
 def prim_calc(n):
 
-    def create(num):
+    counts = [-1] #stores the counts leading up to the nth value. Starts at 0
+    previous_values = [0] #stores the value of the step before the current index/value
+    possible_precursor = float("inf")  #just used to choose the best path. is the count of the precursor value
+    precursor_value = 0 #stores the value/index of the preferred path
 
-        Buildup_List = [0,0]
-        Path_List = [0,0]
-        High = num + 1
+    for value in range(1, n+1):
 
-        for current in range(2, num):
+        possible_precursor = float("inf")
+        precursor_value = 0
 
-            Previous_Buildup = []
+        if (value % 3) == 0:
 
-            if divide_check(current, 3):
-                Previous_Buildup.append(Buildup_List[div_int(current, 3)])
-            else:
-                Previous_Buildup.append(High)
-            if divide_check(current, 2):
-                Previous_Buildup.append(Buildup_List[div_int(current, 2)])
-            else:
-                Previous_Buildup.append(High)
-            Previous_Buildup.append(Buildup_List[current - 1])
+            intindex3 = int(value/3)
+            possible_precursor = counts[intindex3]
+            precursor_value = intindex3
 
-            pass_on = smallest_check(Previous_Buildup)
-            Buildup_List.append(pass_on[0] + 1)
-            Path_List.append(path_add(pass_on[1],current))
+        if (value % 2) == 0:
 
-        return Path_List
+            intindex2 = int(value/2)
 
-    def back_prop(Path_List):
+            if counts[intindex2] < possible_precursor:
 
-        Current_El = Path_List[-1]
-        Path = []
+                possible_precursor = counts[intindex2]
+                precursor_value = intindex2
 
-        while Current_El != 1:
+        if counts[value-1] < possible_precursor:
 
-            Path.append(Current_El)
-            Next_El = Current_El
-            Current_El = Path_List[Next_El]
+            intindex1 = int(value-1)
+            precursor_value = intindex1
 
-        return Path
+        counts.append(counts[precursor_value] + 1)
+        previous_values.append(precursor_value)
 
-    Path_List_Pre = create(n)
-    Final_Path = back_prop(Path_List_Pre)
+    return previous_values, counts[-1]
 
-    return Final_Path
+def backtrack(forward_track, n):
 
+    path = []
+    current_value = n
 
-#input = sys.stdin.read()
-#n = int(input)
-n = 5
-sequence = list(prim_calc(n))
+    while forward_track[current_value] !=  1:
+
+        path.append(forward_track[current_value])
+        current_value = forward_track[current_value]
+
+    return path
+
+def f(n):
+
+    if n == 1:
+
+        return [0]
+
+    dynamic_track, length = prim_calc(n)
+    the_path = backtrack(dynamic_track, n)
+    the_path.append(1)
+    the_path.reverse()
+    the_path.append(n)    
+
+    return the_path
+
+'''
+expath = f(2)
+print(expath)
+'''
+
+input = sys.stdin.read()
+n = int(input)
+sequence = list(f(n))
 print(len(sequence) - 1)
 for x in sequence:
     print(x, end=' ')

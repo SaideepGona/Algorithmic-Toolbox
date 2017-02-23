@@ -1,37 +1,65 @@
-d = {}
+# Uses python3
+def prim_calc(n):
+
+    counts = [-1] #stores the counts leading up to the nth value. Starts at 0
+    previous_values = [0] #stores the value of the step before the current index/value
+    possible_precursor = float("inf")  #just used to choose the best path. is the count of the precursor value
+    precursor_value = 0 #stores the value/index of the preferred path
+
+    for value in range(1, n+1):
+
+        possible_precursor = float("inf")
+        precursor_value = 0
+
+        if (value % 3) == 0:
+
+            intindex3 = int(value/3)
+            possible_precursor = counts[intindex3]
+            precursor_value = intindex3
+
+        if (value % 2) == 0:
+
+            intindex2 = int(value/2)
+
+            if counts[intindex2] < possible_precursor:
+
+                possible_precursor = counts[intindex2]
+                precursor_value = intindex2
+
+        if counts[value-1] < possible_precursor:
+
+            intindex1 = int(value-1)
+            precursor_value = intindex1
+
+        counts.append(counts[precursor_value] + 1)
+        previous_values.append(precursor_value)
+
+    return previous_values, counts[-1]
+
+def backtrack(forward_track, n):
+
+    path = []
+    current_value = n
+
+    while forward_track[current_value] !=  1:
+
+        path.append(forward_track[current_value])
+        current_value = forward_track[current_value]
+
+    return path
 
 def f(n):
-    if n == 1:
-        return 1, -1
-    if d.get(n) is not None:
-        return d[n]
-    ans = (f(n - 1)[0] + 1, n - 1)
 
-    if n % 2 == 0:
-        ret = f(n // 2)
-        if ans[0] > ret[0]:
-            ans = (ret[0] + 1, n // 2)
+    dynamic_track, length = prim_calc(n)
+    the_path = backtrack(dynamic_track, n)
+    the_path.append(1)
+    return the_path
 
-    if n % 3 == 0:
-        ret = f(n // 3)
-        if ans[0] > ret[0]:
-            ans = (ret[0] + 1, n // 3)
-
-    d[n] = ans
-    return ans
-
-
-def optimal_sequence(n):
-    sequence = []
-    while n >= 1:
-        sequence.append(n)
-        if n % 3 == 0:
-            n = n // 3
-        elif n % 2 == 0:
-            n = n // 2
-        else:
-            n = n - 1
-    return reversed(sequence)
+'''
+expath, exlength = f(5)
+print(expath)
+print(exlength)
+'''
 
 input = sys.stdin.read()
 n = int(input)
